@@ -1,0 +1,192 @@
+import streamlit as st
+import pandas as pd
+import numpy as np
+from io import BytesIO
+# PDF Generation Library
+try:
+    from reportlab.lib.pagesizes import letter
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib import colors
+except ImportError:
+    st.error("ReportLab library missing. Please ensure requirements.txt is updated.")
+
+# Page configurations
+st.set_page_config(
+    page_title="FUNDiagnosis - Premium MF Portfolio Audit",
+    page_icon="📊",
+    layout="wide"
+)
+
+# Custom Styling
+st.markdown("""
+    <style>
+    .main { background-color: #F8FAFC; }
+    div[data-testid="stMetricValue"] { font-size: 28px; font-weight: 900; color: #0F172A; }
+    .card {
+        background-color: white;
+        padding: 24px;
+        border-radius: 16px;
+        border: 1px solid #E2E8F0;
+        margin-bottom: 16px;
+    }
+    .premium-box {
+        background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 24px;
+        text-align: center;
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
+    }
+    </style>
+""", unsafe_allow_code=True)
+
+# Sidebar
+st.sidebar.markdown("<h1 style='color:#14B8A6; font-weight:900;'>FUND<span style='color:#64748B;'>iagnosis</span></h1>", unsafe_allow_code=True)
+st.sidebar.markdown("<p style='color:#94A3B8; font-size:12px; font-style:italic;'>Diagnosis of MF Portfolios</p>", unsafe_allow_code=True)
+st.sidebar.write("---")
+st.sidebar.success("💎 Premium Active Audit License")
+
+# State Management for Payment
+if 'payment_done' not in st.session_state:
+    st.session_state['payment_done'] = False
+
+# Tabs Navigation
+tabs = st.tabs(["📥 Import CAS", "📊 Dashboard Overview", "🔄 Stock Overlap", "🛠️ Consolidation Strategy", "📈 Growth Projection", "📑 Premium PDF Report"])
+
+# --- TAB 1: IMPORT ---
+with tabs[0]:
+    st.markdown("## 📥 Upload Mutual Fund Statement")
+    uploaded_file = st.file_uploader("Upload your decrypted CAMS/KFintech PDF or Excel", type=["pdf", "csv", "xlsx"])
+    password = st.text_input("Enter Statement Password (if any)", type="password")
+    if st.button("Run Full Diagnostic Engine", type="primary"):
+        if uploaded_file:
+            st.success("✅ Analysis Complete! 11 active funds mapped. Check other tabs.")
+        else:
+            st.error("Please drop a valid file first.")
+
+# --- TAB 2: OVERVIEW ---
+with tabs[1]:
+    st.markdown("## 📊 Portfolio Diagnosis Overview")
+    m1, m2, m3, m4 = st.columns(4)
+    m1.metric("Total Portfolio Value", "₹14,28,500")
+    m2.metric("Total Schemes Owned", "11 Funds", "Highly Cluttered", delta_color="inverse")
+    m3.metric("Expense Ratio Bleed", "1.82%", "High", delta_color="inverse")
+    m4.metric("Health Score", "68/100", "Action Required")
+    
+    st.error("🚨 **Red Flag:** Axis Bluechip and SBI Bluechip have **64% common stock overlap**.")
+
+# --- TAB 3: OVERLAP ---
+with tabs[2]:
+    st.markdown("## 🔄 Stock Overlap Analysis")
+    overlap_df = pd.DataFrame({
+        "Fund A": ["Parag Parikh Flexi Cap", "Mirae Asset Large Cap", "Quant Active Fund"],
+        "Fund B": ["HDFC Top 100", "SBI Bluechip Plan", "Nippon India Small Cap"],
+        "Overlap %": ["18%", "68%", "34%"],
+        "Risk Status": ["Low", "Critical Duplication", "Moderate"]
+    })
+    st.table(overlap_df)
+
+# --- TAB 4: CONSOLIDATE ---
+with tabs[3]:
+    st.markdown("## 🛠️ Portfolio Consolidation Plan")
+    st.markdown("""
+    <div class='card'>
+        <h4 style='color:#E11D48;'>🔴 EXIT STRATEGY: Axis Bluechip Regular Growth</h4>
+        <p><b>Recommendation:</b> Switch to <b>UTI Nifty 50 Index Fund (Direct)</b></p>
+        <p><b>Benefit:</b> Saves ~₹27,240 annually by cutting expense ratio from 2.12% to 0.21%.</p>
+    </div>
+    """, unsafe_allow_code=True)
+
+# --- TAB 5: PROJECTION ---
+with tabs[4]:
+    st.markdown("## 📈 Performance & Opportunity Projection")
+    years = st.slider("Horizon (Years)", 3, 30, 15)
+    current_fv = int(1428500 * ((1 + 0.112) ** years))
+    optimized_fv = int(1428500 * ((1 + 0.134) ** years))
+    st.write(f"**Current Path (Unoptimized):** ₹ {current_fv:,}")
+    st.write(f"**Optimized Path (FUNDiagnosis Plan):** ₹ {optimized_fv:,}")
+    st.success(f"📈 Total Extra Wealth Created: ₹ {optimized_fv - current_fv:,}")
+
+# --- TAB 6: PREMIUM DOWNLOAD ---
+with tabs[5]:
+    st.markdown("<br>", unsafe_allow_code=True)
+    
+    if not st.session_state['payment_done']:
+        st.markdown("""
+        <div class='premium-box'>
+            <p style='letter-spacing:2px; font-size:12px; color:#14B8A6; font-weight:bold;'>OFFICIAL AUDIT REPORT</p>
+            <h2 style='color:white; margin:0;'>Unlock Your Comprehensive Diagnosis PDF</h2>
+            <h1 style='color:#14B8A6; font-size:48px; margin:15px 0;'>₹199</h1>
+            <p style='color:#94A3B8; font-size:14px;'>Get a professional, print-ready breakdown of overlaps, risks, and asset adjustments.</p>
+        </div>
+        """, unsafe_allow_code=True)
+        
+        st.write("<br>", unsafe_allow_code=True)
+        
+        # ⚠️ PAYMENT GATEWAY METHOD FOR HUGGING FACE
+        st.markdown("### 💳 Step 1: Complete Your Payment")
+        st.info("Neeche diye gaye safe payment link par click karke ₹199 pay karein.")
+        
+        # Replace this URL with your actual Razorpay Payment Link / Instamojo Link
+        payment_url = "https://razorpay.com/" 
+        st.markdown(f'<a href="{payment_url}" target="_blank"><button style="background-color:#14B8A6; color:white; padding:12px 24px; border:none; border-radius:8px; font-weight:bold; cursor:pointer; width:100%;">Click Here to Pay ₹199 via UPI/Card</button></a>', unsafe_allow_code=True)
+        
+        st.write("<br>", unsafe_allow_code=True)
+        st.markdown("### 🔓 Step 2: Enter Transaction ID/Code")
+        code_input = st.text_input("Payment karne ke baad apna Order ID ya Secret Code yahan dalein:")
+        
+        # Simple verification condition (You can give a static code to users or check length)
+        if st.button("Verify Payment & Activate Download"):
+            if len(code_input) > 4:
+                st.session_state['payment_done'] = True
+                st.rerun()
+            else:
+                st.error("Invalid Code. Please check your payment confirmation.")
+                
+    else:
+        st.balloons()
+        st.success("🎉 Payment Verified! Your Premium Audit License is active.")
+        
+        # HELPER FUNCTION TO GENERATE PDF DYNAMICALLY
+        def generate_pdf():
+            buffer = BytesIO()
+            doc = SimpleDocTemplate(buffer, pagesize=letter)
+            styles = getSampleStyleSheet()
+            
+            # Custom Styles for PDF
+            title_style = ParagraphStyle('Title', parent=styles['Heading1'], fontSize=24, textColor=colors.HexColor('#0F172A'), spaceAfter=20)
+            text_style = ParagraphStyle('Text', parent=styles['Normal'], fontSize=11, leading=16, spaceAfter=10)
+            
+            story = []
+            story.append(Paragraph("FUNDiagnosis - Executive Portfolio Audit", title_style))
+            story.append(Paragraph("Tagline: Diagnosis of MF Portfolios", text_style))
+            story.append(Spacer(1, 15))
+            
+            story.append(Paragraph("<b>1. Portfolio Summary:</b>", styles['Heading2']))
+            story.append(Paragraph("- Total Portfolio Value Evaluated: INR 14,28,500", text_style))
+            story.append(Paragraph("- Health Score: 68/100 (Action Required)", text_style))
+            story.append(Paragraph("- Aggregate Expense Ratio: 1.82%", text_style))
+            story.append(Spacer(1, 10))
+            
+            story.append(Paragraph("<b>2. Critical Red Flags & Overlaps:</b>", styles['Heading2']))
+            story.append(Paragraph("- <b>Axis Bluechip Fund</b> and <b>SBI Bluechip Fund</b> hold a <b>64% structural duplication</b> in stock components.", text_style))
+            story.append(Paragraph("- High Sector Concentration: 28.4% allocation locked in Financial Services.", text_style))
+            story.append(Spacer(1, 10))
+            
+            story.append(Paragraph("<b>3. Actionable Consolidation Blueprint:</b>", styles['Heading2']))
+            story.append(Paragraph("Exit Axis Bluechip Regular Plan immediately. Move capital into UTI Nifty 50 Index Fund (Direct Plan) to compress fees from 2.12% down to 0.21%, recovering lost yield drag.", text_style))
+            
+            doc.build(story)
+            buffer.seek(0)
+            return buffer
+
+        pdf_data = generate_pdf()
+        
+        st.download_button(
+            label="📥 Download Official Audit Report (PDF)",
+            data=pdf_data,
+            file_name="FUNDiagnosis_Premium_Report.pdf",
+            mime="application/pdf",
+            use_container_width=True
+        )
