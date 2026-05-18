@@ -39,7 +39,7 @@ st.markdown("""
         box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
     }
     </style>
-""", unsafe_allow_code=True)
+""", unsafe_allow_html=True)
 
 # Sidebar
 st.sidebar.markdown("<h1 style='color:#14B8A6; font-weight:900;'>FUND<span style='color:#64748B;'>iagnosis</span></h1>", unsafe_allow_code=True)
